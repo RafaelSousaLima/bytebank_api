@@ -11,6 +11,7 @@ class LoggingInterceptor implements InterceptorContract {
     if (data.method == Method.POST) {
       data.headers.addAll(headers);
     }
+    print(data.baseUrl);
     return data;
   }
 

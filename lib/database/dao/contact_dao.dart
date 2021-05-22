@@ -26,7 +26,6 @@ static const String _tableName = 'contacts';
   Future<List<Contact>> findAll() async {
     final Database db = await getDataBase();
     final List<Map<String, dynamic>> result = await db.query(_tableName);
-    debugPrint(result.toString());
     List<Contact> contacts = _toList(result);
     return contacts;
   }
@@ -41,7 +40,7 @@ static const String _tableName = 'contacts';
   List<Contact> _toList(List<Map<String, dynamic>> result) {
     final List<Contact> contacts = [];
     for (Map<String, dynamic> row in result) {
-      contacts.add(Contact(row[_id], row[_name], row[_accountNumber]));
+      contacts.add(Contact(name: row[_name], accountNumber: row[_accountNumber]));
     }
     return contacts;
   }

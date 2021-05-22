@@ -1,4 +1,4 @@
-import 'package:bytebank/models/Transaction.dart';
+import 'package:bytebank/models/transaction.dart';
 import 'package:bytebank/models/contact.dart';
 import 'package:bytebank/service/webclient/transaction_service.dart';
 import 'package:flutter/material.dart';
@@ -60,11 +60,10 @@ class _TransactionFormState extends State<TransactionForm> {
                   child: ElevatedButton(
                     child: Text('Transfer'),
                     onPressed: () {
+                      final double value =
+                          double.tryParse(_valueController.text);
                       transactionService.save(
-                          Transaction(
-                            double.tryParse(_valueController.text),
-                            widget.contact,
-                          ),
+                        Transaction(value: value, contact: widget.contact),
                       ).then((transaction) {
                         if (transaction != null) {
                           Navigator.pop(context);
