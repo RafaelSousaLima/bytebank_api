@@ -15,7 +15,7 @@ class LoggingInterceptor implements InterceptorContract {
   final List<int> _statusAccept = [200, 201, 202, 203, 204];
 
   void _throwHttpError(int statusCode) =>
-      throw HttpException(_statusCodeResponses[statusCode]);
+      throw HttpException(_getMessage(statusCode));
 
   String _getMessage(int statusCode) {
     if (_statusCodeResponses.containsKey(statusCode)) {
