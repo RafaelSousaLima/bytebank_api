@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class Progress extends StatelessWidget {
-  final String progress;
+  final String message;
 
-  const Progress({this.progress = "Loading"});
+  const Progress({this.message = "Loading"});
 
   @override
   Widget build(BuildContext context) {

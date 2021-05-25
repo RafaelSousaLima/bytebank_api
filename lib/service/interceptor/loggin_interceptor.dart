@@ -1,10 +1,29 @@
+import 'package:bytebank/service/exceptions/http_exception.dart';
 import 'package:http_interceptor/http_interceptor.dart';
 
 class LoggingInterceptor implements InterceptorContract {
+  final Map<int, String> _statusCodeResponses = {
+    400: 'there was an error submitting transaction',
+    401: 'authentication failed',
+    409: 'transaction exists'
+  };
+
   final Map<String, String> headers = {
     'Content-Type': 'application/json',
-    'password': '2000'
   };
+
+  final List<int> _statusAccept = [200, 201, 202, 203, 204];
+
+  void _throwHttpError(int statusCode) =>
+      throw HttpException(_statusCodeResponses[statusCode]);
+
+  String _getMessage(int statusCode) {
+    if (_statusCodeResponses.containsKey(statusCode)) {
+      return _statusCodeResponses[statusCode];
+    } else {
+      return 'Unknown error';
+    }
+  }
 
   @override
   Future<RequestData> interceptRequest({RequestData data}) async {
@@ -17,10 +36,9 @@ class LoggingInterceptor implements InterceptorContract {
 
   @override
   Future<ResponseData> interceptResponse({ResponseData data}) async {
-    //print("***RESPONSE***");
-    //print(data.statusCode);
-    //print(data.headers);
-    //print(data.body);
+    if (!_statusAccept.contains(data.statusCode)) {
+      _throwHttpError(data.statusCode);
+    }
     return data;
   }
 }

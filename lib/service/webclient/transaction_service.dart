@@ -6,8 +6,9 @@ import 'package:http/http.dart';
 import 'package:http_interceptor/http_client_with_interceptor.dart';
 
 class TransactionService {
-  final Client client =
-      HttpClientWithInterceptor.build(interceptors: [LoggingInterceptor()]);
+  final Client client = HttpClientWithInterceptor.build(
+      interceptors: [LoggingInterceptor()],
+      requestTimeout: Duration(seconds: 5));
 
   final String baseUrl = "192.168.1.249:8081";
 
@@ -21,9 +22,11 @@ class TransactionService {
         .toList();
   }
 
-  Future<Transaction> save(Transaction transaction) async {
-    final Response response = await client
-        .post(Uri.http(baseUrl, "/transactions"), body: jsonEncode(transaction.toJson()));
+  Future<Transaction> save(Transaction transaction, String password) async {
+    final Response response = await client.post(
+        Uri.http(baseUrl, "/transactions"),
+        headers: {'password': password},
+        body: jsonEncode(transaction.toJson()));
     return Transaction.fromJson(jsonDecode(response.body));
   }
 }
