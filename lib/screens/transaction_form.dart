@@ -7,6 +7,8 @@ import 'package:bytebank/widgets/progress.dart';
 import 'package:bytebank/widgets/response_dialog.dart';
 import 'package:bytebank/widgets/transaction_auth_dialog.dart';
 import 'package:bytebank/service/webclient/transaction_service.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
@@ -112,12 +114,22 @@ class _TransactionFormState extends State<TransactionForm> {
     });
     final Transaction transaction = await transactionService
         .save(transactionCreated, password)
-        .catchError((e) => _showFailureMessage(context, message: e.message),
-            test: (e) => e is HttpException)
-        .catchError((e) => _showFailureMessage(context, message: e.message),
-            test: (e) => e is TimeoutException)
-        .catchError((e) => _showFailureMessage(context))
-        .whenComplete(() => setState(() => _sending = false));
+        .catchError((e) {
+      if (FirebaseCrashlytics.instance.isCrashlyticsCollectionEnabled) {
+        FirebaseCrashlytics.instance.recordError(e, null);
+        _showFailureMessage(context, message: e.message);
+      }
+    }, test: (e) => e is HttpException).catchError((e) {
+      if (FirebaseCrashlytics.instance.isCrashlyticsCollectionEnabled) {
+        FirebaseCrashlytics.instance.recordError(e, null);
+        _showFailureMessage(context, message: e.message);
+      }
+    }, test: (e) => e is TimeoutException).catchError((e) {
+      if (FirebaseCrashlytics.instance.isCrashlyticsCollectionEnabled) {
+        FirebaseCrashlytics.instance.recordError(e, null);
+        _showFailureMessage(context);
+      }
+    }).whenComplete(() => setState(() => _sending = false));
 
     if (transaction != null) {
       await showDialog(

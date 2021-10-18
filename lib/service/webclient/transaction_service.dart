@@ -3,14 +3,14 @@ import 'dart:convert';
 import 'package:bytebank/models/transaction.dart';
 import 'package:bytebank/service/interceptor/loggin_interceptor.dart';
 import 'package:http/http.dart';
-import 'package:http_interceptor/http_client_with_interceptor.dart';
+import 'package:http_interceptor/http/http.dart';
 
 class TransactionService {
-  final Client client = HttpClientWithInterceptor.build(
+  final Client client = InterceptedClient.build(
       interceptors: [LoggingInterceptor()],
       requestTimeout: Duration(seconds: 5));
 
-  final String baseUrl = "192.168.1.249:8081";
+  final String baseUrl = "192.168.1.249:8080";
 
   Future<List<Transaction>> findAll() async {
     final Response response = await client
