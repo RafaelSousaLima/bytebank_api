@@ -1,17 +1,33 @@
+import 'package:bytebank/models/name.dart';
+import 'package:bytebank/screens/name.dart';
 import 'package:bytebank/screens/transactions_list.dart';
+import 'package:bytebank/widgets/container.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'contacts_list.dart';
 
-class Dashboard extends StatelessWidget {
-  const Dashboard({Key key}) : super(key: key);
+class DashboardContainer extends BlocContainer {
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => NameCubit("Rafael"),
+      child: DashboardView(),
+    );
+  }
+}
 
+class DashboardView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Deshboard'),
+        // CUIDADO PARA NÃO MISTURAR LÓGICAS DE OBSERVER COM INTERFACE
+        title: BlocBuilder<NameCubit, String>(
+          builder: (context, state) => Text('Welcome $state'),
+        ),
+        backgroundColor: Colors.green,
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -35,6 +51,11 @@ class Dashboard extends StatelessWidget {
                   Icons.description,
                   onClick: () => _showTransactionsList(context),
                 ),
+                _FutureItem(
+                  'Change name',
+                  Icons.person_outline,
+                  onClick: () => _showChangeName(context),
+                ),
               ],
             ),
           ),
@@ -43,18 +64,37 @@ class Dashboard extends StatelessWidget {
     );
   }
 
-  void _showContactsList(BuildContext context) {
+  void _showChangeName(BuildContext blocContext) {
     if (FirebaseCrashlytics.instance.isCrashlyticsCollectionEnabled) {
       FirebaseCrashlytics.instance.crash();
     }
-    Navigator.of(context).push(
+    Navigator.of(blocContext).push(
       MaterialPageRoute(
-        builder: (context) => ContactsList(),
+        builder: (context) => BlocProvider.value(
+          value: BlocProvider.of<NameCubit>(blocContext),
+          child: NameContainer(),
+        ),
+        // builder: (context) => NameContainer(),
       ),
     );
   }
 
+  void _showContactsList(BuildContext context) {
+    if (FirebaseCrashlytics.instance.isCrashlyticsCollectionEnabled) {
+      FirebaseCrashlytics.instance.crash();
+    }
+    push(context, ContactsListContainer());
+    // Navigator.of(context).push(
+    //   MaterialPageRoute(
+    //     builder: (context) => ContactsList(),
+    //   ),
+    // );
+  }
+
   void _showTransactionsList(BuildContext context) {
+    if (FirebaseCrashlytics.instance.isCrashlyticsCollectionEnabled) {
+      FirebaseCrashlytics.instance.crash();
+    }
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => TransactionsList(),

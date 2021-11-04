@@ -10,7 +10,7 @@ class TransactionService {
       interceptors: [LoggingInterceptor()],
       requestTimeout: Duration(seconds: 5));
 
-  final String baseUrl = "192.168.1.249:8080";
+  final String baseUrl = "192.168.0.10:8080";
 
   Future<List<Transaction>> findAll() async {
     final Response response = await client
@@ -29,4 +29,18 @@ class TransactionService {
         body: jsonEncode(transaction.toJson()));
     return Transaction.fromJson(jsonDecode(response.body));
   }
+
+  String _getMessage(int statusCode) {
+    if (_statusCodeResponses.containsKey(statusCode)) {
+      return _statusCodeResponses[statusCode];
+    }
+    return 'unknown error';
+  }
+
+  static final Map<int, String> _statusCodeResponses = {
+    400: 'there was an error submitting transaction',
+    401: 'authentication failed',
+    409: 'transaction already exists'
+  };
 }
+
